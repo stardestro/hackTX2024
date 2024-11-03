@@ -81,6 +81,7 @@ struct ContentView : View {
     @State var playerswall: ModelEntity = ModelEntity()
     
     @State private var showingSheet = false
+    @State private var assignedanchor = true
     
     @State var HighScore: Int = 0
     
@@ -136,8 +137,8 @@ struct ContentView : View {
                 MusicManager.instance.playFunk()
                 lazar.registerComponent()
                 rootNode = AnchorEntity(.image(group: "AR Resources" , name: "tag"))
-                rootNode.anchor?.reanchor(.world(transform: rootNode.transform.matrix), preservingWorldTransform: true)
-                rootNode = AnchorEntity(.plane(.horizontal, classification: .any, minimumBounds:     [0.1, 0.1]))
+                
+//                rootNode = AnchorEntity(.plane(.horizontal, classification: .any, minimumBounds:     [0.1, 0.1]))
                 cameraNode = AnchorEntity(.camera)
                 
                 //                let deathbox = ModelEntity()
@@ -154,18 +155,30 @@ struct ContentView : View {
                 
                 //                rootNode.addChild(deathbox)
                 //
-                //                let box = ModelEntity()
-                //                let mesh = MeshResource.generateBox(size: 0.1, cornerRadius: 0.005)
-                //                let material = SimpleMaterial(color: .gray, roughness: 0.15, isMetallic: true)
-                //                box.components.set(ModelComponent(mesh: mesh, materials: [material]))
-                //                box.physicsBody = PhysicsBodyComponent(massProperties: .default, material: .generate(), mode: .dynamic)
-                //                box.generateCollisionShapes(recursive: true)
-                //                box.physicsBody?.isAffectedByGravity = false
-                //                box.position = [0, 0.5, 0]
-                //    //            let anchor = AnchorEntity(.image(group: "AR Resources" , name: "tag"))
-                //                box.applyLinearImpulse(SIMD3<Float>(0, 0, -0.2), relativeTo: nil)
-                //
-                //                rootNode.addChild(box)
+                let box = ModelEntity()
+                let mesh = MeshResource.generateBox(size: 0.005, cornerRadius: 0.000005)
+                let material = SimpleMaterial(color: .red.withAlphaComponent(0.7), roughness: 0.15, isMetallic: true)
+                box.components.set(ModelComponent(mesh: mesh, materials: [material]))
+//                box.physicsBody = PhysicsBodyComponent(massProperties: .default, material: .generate(), mode: .dynamic)
+//                box.generateCollisionShapes(recursive: true)
+//                box.physicsBody?.isAffectedByGravity = false
+                box.position = [0, 0, -0.1]
+    //            let anchor = AnchorEntity(.image(group: "AR Resources" , name: "tag"))
+//                box.applyLinearImpulse(SIMD3<Float>(0, 0, -0.2), relativeTo: nil)
+
+                cameraNode.addChild(box)
+                
+                var ship = Entity()
+                ship = try! await Entity(named: "ship")
+                
+    //            let anchor = AnchorEntity(.image(group: "AR Resources" , name: "tag"))
+//                box.applyLinearImpulse(SIMD3<Float>(0, 0, -0.2), relativeTo: nil)
+                
+                ship.transform.rotation += simd_quatf(angle: radians, axis: SIMD3<Float>(0,1.2,0))
+                
+                ship.position = [-0.02, -0.03, -0.2]
+//                ship.orientation += simd_quatf(angle: radians, axis: SIMD3<Float>(1,1,0))
+                cameraNode.addChild(ship)
                 
                 
                 
@@ -178,7 +191,7 @@ struct ContentView : View {
                 playerswall.physicsBody = PhysicsBodyComponent(massProperties: .default, material: .generate(staticFriction: 0.1, dynamicFriction: 0.1, restitution: 0.1), mode: .static)
                 playerswall.generateCollisionShapes(recursive: true)
 //                floor.position = [0, -0.5, 0.5]
-                playerswall.position = cameraNode.position(relativeTo: rootNode) + [0, 0, cameraNode.position(relativeTo: rootNode).z + 0.05]
+                playerswall.position = cameraNode.position(relativeTo: rootNode) + [0, 0, cameraNode.position(relativeTo: rootNode).z + 0.2]
                 playerswall.components.set(playerwall())
     //            let floorAnchor = AnchorEntity(.plane(alignment: .horizontal))
                 
@@ -227,11 +240,22 @@ struct ContentView : View {
                 }))
                 
                 content.camera = .spatialTracking
+                content.renderingEffects.motionBlur = .disabled
+                content.renderingEffects.cameraGrain = .disabled
                 
             }
             VStack
             {
                 HStack{
+                    if(!assignedanchor){
+                        Text("Look for the Aliens")
+                            .foregroundStyle(.white, .black)
+                            .frame(width: 150, height: 50)
+                            .background(Color.blue.opacity(0.8))
+                            .cornerRadius(15)
+                            .safeAreaPadding()
+                            .offset(y: +50)
+                    }
                     Spacer()
                     Text(HighScore, format: .number)
                         .foregroundStyle(.white, .black)
@@ -304,7 +328,12 @@ struct ContentView : View {
                 }
                 
                 // update wall to behind player
-                playerswall.position = cameraNode.position(relativeTo: rootNode) + [0, 0, cameraNode.position(relativeTo: rootNode).z + 0.05]
+                playerswall.position = cameraNode.position(relativeTo: rootNode) + [0, 0, cameraNode.position(relativeTo: rootNode).z + 0.1]
+                
+                if (rootNode.isActive && assignedanchor) {
+                    rootNode.anchor?.reanchor(.world(transform: rootNode.transform.matrix), preservingWorldTransform: true)
+                    assignedanchor = false
+                }
                 
             }
         }
