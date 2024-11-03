@@ -36,6 +36,14 @@ class lazar: Component {
     // Optionally, put any needed state here.
 }
 
+class asteriod: Component {
+    // Optionally, put any needed state here.
+}
+
+class playerwall: Component {
+    // Optionally, put any needed state here.
+}
+
 
 class Powersystem: System {
 
