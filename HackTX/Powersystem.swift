@@ -28,7 +28,11 @@
 
 import RealityKit
 
-struct alien: Component {
+class alien: Component {
+    // Optionally, put any needed state here.
+}
+
+class lazar: Component {
     // Optionally, put any needed state here.
 }
 
