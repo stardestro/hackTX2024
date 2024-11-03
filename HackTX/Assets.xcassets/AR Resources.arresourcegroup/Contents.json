@@ -6,6 +6,9 @@
   "resources" : [
     {
       "filename" : "apriltag.jpg.arreferenceimage"
+    },
+    {
+      "filename" : "tag.arreferenceimage"
     }
   ]
 }

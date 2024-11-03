@@ -37,7 +37,7 @@ class Powersystem: System {
 
 
     // Define a query to return all entities with a MyComponent.
-    private static let query = EntityQuery(where: .has(alien.self))
+    private static let query = EntityQuery(where: .has(PhysicsBodyComponent.self))
 
 
     // Initializer is required. Use an empty implementation if there's no setup needed.
